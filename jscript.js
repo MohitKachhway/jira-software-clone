@@ -17,7 +17,7 @@ const modalStr =`
 
     </form>
 </div>`;
-
+let count =0;
 const btn = document.getElementsByClassName("btn")[0];
 btn.addEventListener("click",()=>{
     // create modal :
@@ -62,22 +62,52 @@ btn.addEventListener("click",()=>{
 //--------------form-submittion-end--------------------
 
 // task addition :
-      
-// overflow: hidden; /* Prevent text overflow */
-//   white-space: nowrap; /* Prevent text from wrapping to a new line */
-//   text-overflow: ellipsis;
+
+
     const addTask=(obj)=>{
-        let pannel = document.getElementById(obj.status)
+        let pannel = document.getElementById(obj.status);
         const taskStr=  ` <h4>${obj.title}</h4>
                            <p>${obj.assignee}</p>
-                            <p>${obj.status}</p>
+                            
                             <p class="para-des">${obj.description}</p>`;
         let task = document.createElement("div");
         task.className="task";
+        task.draggable="true";
         task.innerHTML= taskStr;
+        task.id=`task-${count}`;
+        ++count;
+    
+        task.addEventListener("dragstart",(e)=>{
+            e.dataTransfer.setData("tkey",task.id);
+            e.dataTransfer.setData("pkey",task.parentElement.id);
+            console.log(task.id)
+        })
         pannel.appendChild(task);
-
     };  
+
+    //drag start :
+    let pannels = document.getElementsByClassName("pannel");
+    
+
+    for(let i=0 ; i<pannels.length; ++i){
+
+        pannels[i].addEventListener("dragover",(e)=>{
+            e.preventDefault(); 
+        })
+        pannels[i].addEventListener("drop",(e)=>{
+            let taskId = e.dataTransfer.getData("tkey"); // id of dragable task
+            let parentId = e.dataTransfer.getData("pkey");
+            if(parentId===pannels[i].id){
+                window.alert("you can't drop in the same zone")
+                return;
+            }
+            let newElement = document.getElementById(taskId);
+            
+            pannels[i].appendChild(newElement);
+        })
+    }
+
+
    
 
 
